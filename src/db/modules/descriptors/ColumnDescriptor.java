@@ -24,6 +24,10 @@ public class ColumnDescriptor {
 	public Class getType() {
 		return type;
 	}
+	
+	public String asString() {
+		return "N=" + this.name + "%" + "T=" + (this.getType() == Integer.class ? "I" : "S") + "%S=" + this.size + ";";
+	}
 
 	public void setType(Class type) {
 		this.type = type;

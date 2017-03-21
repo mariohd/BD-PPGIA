@@ -1,9 +1,11 @@
 package userInterface;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import db.modules.dataStructure.Table;
 import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
 
@@ -52,7 +54,7 @@ public class cli {
 			break;
 
 		case 2:
-			//listTables();
+			listTables();
 			//operationsWithTables();
 			break;
 		case 3: 
@@ -88,12 +90,48 @@ public class cli {
 			if ("N".equals(more.toUpperCase())) moreColumns = false;
 		}
 		
-		if (fs.createTable(tableName, columns)) {
-			syso("Tabela criada com sucesso!");
-		} else {
-			syse("Algum problema ocorreu =/");
+		try {
+			if (fs.createTable(tableName, columns)) {
+				syso("Tabela criada com sucesso!");
+			} else {
+				syse("Algum problema ocorreu =(");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		operationsWithTables();
+	}
+	
+	private static Table listTables() {
+		tyo();
+		syso("Tabelas => ");
+		
+		int index = 1;
+		
+		for (Table table : fs.getTables()) {
+			syso("\t" + (index) + " - " + table.getNome());
+			index ++;
+		}
+		
+		syso(index + " - Retornar");
+		
+		int opt = getScanner().nextInt();
+		
+		if (opt <= 0 || opt > fs.getTables().size()) {
+			syse("Opção Inválida"); 
+			listTables();
+		}
+		
+		Table tb = fs.getTables().get(opt - 1);
+		
+		try {
+			tb.load();
+			tb.print();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return tb;
 	}
 	
 	private static Scanner getScanner() {
