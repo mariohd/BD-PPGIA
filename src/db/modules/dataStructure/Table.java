@@ -37,9 +37,9 @@ public class Table {
 	
 	public boolean save() throws IOException {		
 		try {
-			this.file = new RandomAccessFile("database/data/" + this.nome + ".tb", "rw");			
+			this.file = new RandomAccessFile(filePath, "rw");			
 		} catch (FileNotFoundException e) {
-			Path pathToFile = Paths.get("database/data/" + this.nome + ".tb");
+			Path pathToFile = Paths.get(filePath);
 			Files.createDirectories(pathToFile.getParent());
 			Files.createFile(pathToFile);
 			this.save();
