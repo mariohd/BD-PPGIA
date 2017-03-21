@@ -55,7 +55,7 @@ public class cli {
 
 		case 2:
 			listTables();
-			//operationsWithTables();
+			operationsWithTables();
 			break;
 		case 3: 
 			mainMenu();
@@ -117,21 +117,25 @@ public class cli {
 		
 		int opt = getScanner().nextInt();
 		
-		if (opt <= 0 || opt > fs.getTables().size()) {
+		if (opt <= 0) {
 			syse("Opção Inválida"); 
 			listTables();
 		}
 		
-		Table tb = fs.getTables().get(opt - 1);
-		
-		try {
-			tb.load();
-			tb.print();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (opt > fs.getTables().size()) {
+			return null;
+		} else {
+			Table tb = fs.getTables().get(opt - 1);
+			
+			try {
+				tb.load();
+				tb.print();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return tb;
 		}
-		
-		return tb;
 	}
 	
 	private static Scanner getScanner() {
