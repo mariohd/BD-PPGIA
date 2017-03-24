@@ -60,9 +60,16 @@ public class Table {
 	public boolean insert(Map<ColumnDescriptor, Object> tuple) throws IOException {
 		this.load();
 		DataBlock db = this.header.getNextWritingBlock();
+		Tuple tp = new Tuple(tuple);
 		db.load();
-		//db.insert(tuple);
-		return db.read();
+		if (db.availableSpaceFor(tp.size())) {
+			db.insert(tuple);
+		} else {
+			this.header.updateNextWritingBlock();
+			this.insert(tuple);
+		}
+
+		return true;
 	}
 
 	public RandomAccessFile getContainerFile() {

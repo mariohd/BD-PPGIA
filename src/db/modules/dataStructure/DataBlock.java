@@ -7,6 +7,7 @@ import java.util.Map;
 
 import db.Utils;
 import db.modules.descriptors.ColumnDescriptor;
+import db.modules.fs.FileSystem;
 import db.modules.metaStructure.DataBlockHeader;
 
 public class DataBlock {
@@ -20,6 +21,10 @@ public class DataBlock {
 		this.columns = this.parent.getColumns().iterator();
 	}
 	
+	public boolean availableSpaceFor(int tupleSize) {
+		return this.header.getUsedSpace() + 8 + tupleSize <= FileSystem.pageSize;
+	}
+
 	public boolean save() throws IOException {
 		return header.save();
 	}
@@ -93,6 +98,7 @@ public class DataBlock {
 	}
 	
 	public boolean insert(Map<ColumnDescriptor, Object> tuple) throws IOException {
+
 		int currentUsedSpace = this.header.writeStart();
 		int tupleSize = 4;
 		int location = currentUsedSpace + tupleSize;

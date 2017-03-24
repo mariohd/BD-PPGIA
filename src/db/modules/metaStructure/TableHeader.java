@@ -109,4 +109,13 @@ public class TableHeader {
 		DataBlock db = new DataBlock(parent, Utils.toInt(nextWritingBlock, 0));
 		return db;
 	}
+
+	public void updateNextWritingBlock() throws IOException {
+		System.out.println("NOVO BLOCO CRIADO!");
+		int block = Utils.toInt(nextWritingBlock, 0);
+		nextWritingBlock = Utils.toByteArray(block + 1, 4);
+		RandomAccessFile file = parent.getContainerFile();
+		file.seek(5);
+		file.write(nextWritingBlock);
+	}
 }
