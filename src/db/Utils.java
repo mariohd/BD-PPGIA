@@ -22,6 +22,14 @@ public class Utils {
 		return bytes;
 	}
 	
+	public static byte[] toByteArray(int value) {
+	    return new byte[] {
+	            (byte)(value >>> 24),
+	            (byte)(value >>> 16),
+	            (byte)(value >>> 8),
+	            (byte)value};
+	}
+
 	public static String asString(byte[] b) {
 		try {
 			return new String(b, "UTF-8");

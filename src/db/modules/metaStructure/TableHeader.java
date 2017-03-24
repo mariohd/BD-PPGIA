@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.Utils;
+import db.modules.dataStructure.DataBlock;
 import db.modules.dataStructure.Table;
 import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
@@ -23,6 +24,7 @@ public class TableHeader {
 		this.parent = parent;
 		this.blockSize = Utils.toByteArray(FileSystem.pageSize, 3);
 		this.container = this.parent.getContainer();
+		this.nextWritingBlock = Utils.toByteArray(1, 4);
 	}
 
 	public boolean save() throws IOException {
@@ -101,5 +103,10 @@ public class TableHeader {
 		System.out.println("\tCONTAINER STATUS: " + containerStatus);
 		System.out.println("\tPROXIMO BLOCK DE ESCRITA: " + Utils.toInt(nextWritingBlock, 0));
 		System.out.println("\tTAMANHO DO DESCRITOR: " + Utils.toInt(headerDescriptorSize, 0));
+	}
+
+	public DataBlock getNextWritingBlock() {
+		DataBlock db = new DataBlock(parent, Utils.toInt(nextWritingBlock, 0));
+		return db;
 	}
 }

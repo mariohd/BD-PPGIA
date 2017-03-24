@@ -6,7 +6,9 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import db.modules.descriptors.ColumnDescriptor;
 import db.modules.metaStructure.TableHeader;
@@ -14,6 +16,7 @@ import db.modules.metaStructure.TableHeader;
 public class Table {
 	private final String nome;
 	private List<ColumnDescriptor> columns;
+	private List<DataBlock> dataBlocks;
 	private byte container;
 	private RandomAccessFile file;
 	private TableHeader header;
@@ -24,6 +27,7 @@ public class Table {
 		this.header = new TableHeader(this);
 		this.filePath = "database/data/" + this.nome + ".tb";
 		this.file = new RandomAccessFile(filePath, "rw");
+		this.dataBlocks = new ArrayList<DataBlock>();
 	}
 	
 	public Table(String nome, List<ColumnDescriptor> columns, byte container) {
@@ -33,6 +37,7 @@ public class Table {
 		this.container = container;
 		this.filePath = "database/data/" + this.nome + ".tb";
 		this.header = new TableHeader(this);
+		this.dataBlocks = new ArrayList<DataBlock>();
 	}
 	
 	public boolean save() throws IOException {		
@@ -52,6 +57,14 @@ public class Table {
 		return header.load();
 	}
 	
+	public boolean insert(Map<ColumnDescriptor, Object> tuple) throws IOException {
+		this.load();
+		DataBlock db = this.header.getNextWritingBlock();
+		db.load();
+		//db.insert(tuple);
+		return db.read();
+	}
+
 	public RandomAccessFile getContainerFile() {
 		return file;
 	}
