@@ -111,11 +111,14 @@ public class TableHeader {
 	}
 
 	public void updateNextWritingBlock() throws IOException {
-		System.out.println("NOVO BLOCO CRIADO!");
-		int block = Utils.toInt(nextWritingBlock, 0);
-		nextWritingBlock = Utils.toByteArray(block + 1, 4);
+		int block = lastBlock() + 1;
+		nextWritingBlock = Utils.toByteArray(block, 4);
 		RandomAccessFile file = parent.getContainerFile();
 		file.seek(5);
 		file.write(nextWritingBlock);
+	}
+
+	public int lastBlock() {
+		return Utils.toInt(nextWritingBlock, 0);
 	}
 }

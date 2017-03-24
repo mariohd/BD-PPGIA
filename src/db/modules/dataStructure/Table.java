@@ -72,6 +72,19 @@ public class Table {
 		return true;
 	}
 
+	public void printTuples() throws IOException {
+		int qtBlock = this.header.lastBlock();
+
+		for (int i = 1; i <= qtBlock; i ++) {
+			dataBlocks.add(new DataBlock(this, i));
+		}
+
+		for (DataBlock db: dataBlocks) {
+			db.load();
+			db.read();
+		}
+	}
+
 	public RandomAccessFile getContainerFile() {
 		return file;
 	}
