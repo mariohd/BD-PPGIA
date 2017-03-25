@@ -12,16 +12,20 @@ public class TableStructurePanel extends JPanel {
 	
 	private Table table;
 	
-	public TableStructurePanel(Table t) {
-		this.table = t;
-		init();
+	public TableStructurePanel(Table table) {
+		this.table = table;
+		
+		this.init();
+		this.mount();
 	}
 	
 	private void init() {
 		setLayout(new BorderLayout());
+	}
+	
+	private void mount() {
 		ColumnDescriptorTableModel cdtm = new ColumnDescriptorTableModel(table.getColumns());
-		JTable jtb = new JTable(cdtm);
-		JScrollPane jsp = new JScrollPane(jtb);
-		add(jsp, BorderLayout.CENTER);
+		JTable jTable = new JTable(cdtm);
+		this.add(new JScrollPane(jTable), BorderLayout.CENTER);
 	}
 }
