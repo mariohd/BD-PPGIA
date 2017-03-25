@@ -86,6 +86,10 @@ public class DataBlockHeader {
 		return this.blockBeginning + 8;
 	}
 	
+	public String generateNewRowid() {
+		return this.container + "." + Utils.toInt(this.blockId, 0) + "." + this.writeStart();
+	}
+
 	public void print() {
 		System.out.println("\tCONTAINER: " + this.container);
 		System.out.println("\tID DO BLOCO: " + Utils.toInt(blockId, 0));

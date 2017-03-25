@@ -71,4 +71,8 @@ public class DataBlock {
 		
 		return true;
 	}
+
+	public String generateNewRowid() {
+		return this.header.generateNewRowid();
+	}
 }

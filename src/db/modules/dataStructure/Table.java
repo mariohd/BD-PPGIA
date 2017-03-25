@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,11 +60,16 @@ public class Table {
 	
 	public boolean insert(Map<ColumnDescriptor, Object> values) throws IOException {
 		this.load();
-
 		DataBlock db = this.header.getNextWritingBlock();
-		Tuple tuple = new Tuple(values);
-
 		db.load();
+
+		String rowid = db.generateNewRowid();
+		Map<ColumnDescriptor, Object> values2 = new LinkedHashMap<ColumnDescriptor, Object>();
+		values2.put(new ColumnDescriptor("ROWID", String.class, 10), rowid);
+		values2.putAll(values);
+
+		Tuple tuple = new Tuple(values2);
+
 		if (db.availableSpaceFor(tuple.size())) {
 			db.insert(tuple);
 		} else {

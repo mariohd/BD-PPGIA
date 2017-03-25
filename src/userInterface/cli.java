@@ -84,13 +84,15 @@ public class cli {
 		Map<ColumnDescriptor, Object> tuple = new LinkedHashMap<ColumnDescriptor, Object>();
 		Object value;
 		for (ColumnDescriptor column : t.getColumns()) {
-			syso("Digite o valor para a coluna \"" + column.getName() + "\"");
-			if (column.getType() == Integer.class) {
-				value = getScanner().nextInt();
-			} else {
-				value = getScanner().nextLine();
+			if (! column.isSsystemColumn()) {
+				syso("Digite o valor para a coluna \"" + column.getName() + "\"");
+				if (column.getType() == Integer.class) {
+					value = getScanner().nextInt();
+				} else {
+					value = getScanner().nextLine();
+				}
+				tuple.put(column, value);
 			}
-			tuple.put(column, value);
 		}
 
 		try {

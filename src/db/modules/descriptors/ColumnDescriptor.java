@@ -13,6 +13,10 @@ public class ColumnDescriptor {
 		this.size = size;
 	}
 
+	public boolean isSsystemColumn() {
+		return this.name.toUpperCase().equals("ROWID");
+	}
+
 	public String getName() {
 		return name;
 	}
