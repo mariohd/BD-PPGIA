@@ -75,8 +75,11 @@ public class Table {
 	public void printTuples() throws IOException {
 		int qtBlock = this.header.lastBlock();
 
-		for (int i = 1; i <= qtBlock; i ++) {
-			dataBlocks.add(new DataBlock(this, i));
+		if (dataBlocks.size() != qtBlock) {
+			dataBlocks.clear();
+			for (int i = 1; i <= qtBlock; i ++) {
+				dataBlocks.add(new DataBlock(this, i));
+			}
 		}
 
 		for (DataBlock db: dataBlocks) {

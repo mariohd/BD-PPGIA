@@ -2,7 +2,9 @@ package userInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import db.modules.dataStructure.Table;
@@ -30,7 +32,7 @@ public class cli {
 			operationsWithTables();
 			break;
 		case 2:
-			//chooseTable();
+			chooseTable();
 			break;
 		case 3: 
 			break;
@@ -38,6 +40,66 @@ public class cli {
 			syse("Opção inválida");
 			mainMenu();
 		} 
+	}
+
+	private static void chooseTable() {
+		operationsWithTuples(listTables());
+	}
+
+	private static void operationsWithTuples (Table t) {
+		tyo();
+		syso("1 - Inseção de linhas");
+		syso("2 - Consulta de linhas");
+		syso("3 - Retornar");
+
+		int option = getScanner().nextInt();
+
+		switch (option) {
+		case 1:
+			insertTuple(t);
+			break;
+		case 2:
+			readTable(t);
+			operationsWithTuples(t);
+			break;
+		case 3:
+			chooseTable();
+			break;
+		default:
+			syse("Opção inválida");
+			operationsWithTuples(t);
+		}
+	}
+
+	private static void readTable(Table t) {
+		try {
+			t.printTuples();
+			operationsWithTuples(t);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void insertTuple(Table t) {
+		Map<ColumnDescriptor, Object> tuple = new LinkedHashMap<ColumnDescriptor, Object>();
+		Object value;
+		for (ColumnDescriptor column : t.getColumns()) {
+			syso("Digite o valor para a coluna \"" + column.getName() + "\"");
+			if (column.getType() == Integer.class) {
+				value = getScanner().nextInt();
+			} else {
+				value = getScanner().nextLine();
+			}
+			tuple.put(column, value);
+		}
+
+		try {
+			t.insert(tuple);
+			syso("Linha inserida com sucesso!");
+			operationsWithTuples(t);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private static void operationsWithTables() {
