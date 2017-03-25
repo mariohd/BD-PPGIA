@@ -3,24 +3,19 @@ package db.modules.dataStructure;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import db.Utils;
-import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
 import db.modules.metaStructure.DataBlockHeader;
 
 public class DataBlock {
 	private Table parent;
 	private DataBlockHeader header;
-	private Iterator<ColumnDescriptor> columns;
 	private List<Tuple> tuples;
 	
 	public DataBlock(Table parent, int blockId) {
 		this.parent = parent;
 		this.header = new DataBlockHeader(parent, blockId);
-		this.columns = this.parent.getColumns().iterator();
 		this.tuples = new ArrayList<Tuple>();
 	}
 	
