@@ -23,7 +23,10 @@ public class TupleTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return elements.get(0).getColumns().size();
+		if(getRowCount() != 0)
+			return elements.get(0).getColumns().size();
+		else 
+			return 0;
 	}
 
 	@Override
