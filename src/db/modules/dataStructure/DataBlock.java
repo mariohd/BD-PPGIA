@@ -2,7 +2,9 @@ package db.modules.dataStructure;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import db.Utils;
 import db.modules.descriptors.ColumnDescriptor;
@@ -13,11 +15,13 @@ public class DataBlock {
 	private Table parent;
 	private DataBlockHeader header;
 	private Iterator<ColumnDescriptor> columns;
+	private List<Tuple> tuples;
 	
 	public DataBlock(Table parent, int blockId) {
 		this.parent = parent;
 		this.header = new DataBlockHeader(parent, blockId);
 		this.columns = this.parent.getColumns().iterator();
+		this.tuples = new ArrayList<Tuple>();
 	}
 	
 	public boolean availableSpaceFor(int tupleSize) {
@@ -32,68 +36,31 @@ public class DataBlock {
 		return header.load();
 	}
 	
-	public boolean read() throws IOException {
-		int spaceToRead = this.header.getUsedSpace();
+	public void printTuples() {
+		for (Tuple tuple : tuples) {
+			tuple.print();
+		}
+	}
+	
+	public boolean loadTuples() throws IOException {
+		this.tuples = new ArrayList<Tuple>();
+		
 		int zero = this.header.readStart();
-		int cursor = 0;
-		
-		RandomAccessFile file =  this.parent.getContainerFile();
-		
-		while (cursor + zero < zero + spaceToRead) {
-			byte[] tupleSizeBytes = new byte[4];
-			file.seek(zero + cursor);
-			file.read(tupleSizeBytes);
-			cursor += 4;
-			
-			int tupleSize = Utils.toInt(tupleSizeBytes, 0);
-			readTuple(zero + cursor, tupleSize, 4);
-			cursor += tupleSize - 4;
-		}
-		
-		return false;
-	}
-	
-	private int readTuple(int cursor, int tupleSize, int acc) throws IOException {
-		if (acc == tupleSize) {
-			return cursor;
-		} else {
-		
-			RandomAccessFile file =  this.parent.getContainerFile();
-			
-			file.seek(cursor);
-			byte[] columnSizeBytes = new byte[2];
-			file.read(columnSizeBytes);
-			int columnSize = Utils.toInt(columnSizeBytes, 0);
-			cursor += 2;
-			
-			cursor = readColumn(columnSize, cursor);
-			acc += columnSize;
-			return readTuple(cursor, tupleSize, acc + 2);
-		}
-		
-	}
-	
-	private int readColumn(int columnSize, int cursor) throws IOException {
-		byte[] columnBytes = new byte[columnSize];
-		
-		RandomAccessFile file =  this.parent.getContainerFile();
+		int spaceToRead = this.header.getUsedSpace() + zero;
+		int cursor = zero;
 
-		file.seek(cursor);
-		file.read(columnBytes);
-		
-		if (! columns.hasNext() ) {
-			columns = this.parent.getColumns().iterator();
+		while (cursor < spaceToRead) {
+			cursor += readTuple(cursor);
 		}
 		
-		ColumnDescriptor column = columns.next();
-			
-		if (column.getType() == Integer.class) {
-			System.out.println(Utils.toInt(columnBytes, 0));
-		} else {
-			System.out.println(Utils.asString(columnBytes));
-		}
-		
-		return cursor + columnSize;
+		return true;
+	}
+	
+	private int readTuple(int cursor) throws IOException {
+		Tuple tp = new Tuple();
+		cursor = tp.load(parent, cursor);;
+		tuples.add(tp);
+		return cursor;
 	}
 	
 	public boolean insert(Tuple tuple) throws IOException {

@@ -86,7 +86,8 @@ public class Table {
 
 		for (DataBlock db: dataBlocks) {
 			db.load();
-			db.read();
+			db.loadTuples();
+			db.printTuples();
 		}
 	}
 

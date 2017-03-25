@@ -1,5 +1,8 @@
 package db.modules.dataStructure;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import db.Utils;
@@ -12,6 +15,45 @@ public class Tuple {
 		this.columns = columns;
 	}
 	
+	public Tuple() {}
+
+	public int load(Table parent, int start) {
+		RandomAccessFile file = parent.getContainerFile();
+		this.columns = new LinkedHashMap<ColumnDescriptor, Object>();
+		try {
+			file.seek(start);
+			byte[] tupleSizeBytes = new byte[4];
+			file.read(tupleSizeBytes);
+			int tupleSize = Utils.toInt(tupleSizeBytes, 0);
+			int cursor = start + 4;
+			for (ColumnDescriptor column: parent.getColumns()) {
+
+				byte[] size = new byte[2];
+				file.seek(cursor);
+				file.read(size);
+				cursor += 2;
+				int columnSize = Utils.toInt(size, 0);
+
+				byte[] valueByte = new byte[columnSize];
+				file.seek(cursor);
+				file.read(valueByte);
+				Object value;
+				if (column.getType() == Integer.class) {
+					value = Utils.toInt(valueByte, 0);
+				} else {
+					value = Utils.asString(valueByte);
+				}
+				columns.put(column, value);
+
+				cursor += columnSize;
+			}
+			return tupleSize;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 	public byte[] inBytes() {
 		int tupleSize = size();
 		byte[] tupleBytes = new byte[tupleSize];
@@ -47,5 +89,14 @@ public class Tuple {
 						);
 		}
 		return size;
+	}
+
+	public void print() {
+		for (ColumnDescriptor column : columns.keySet()) {
+			System.out.println("\t" + column.getName());
+			System.out.println("\t\t" + columns.get(column));
+		}
+		System.out.println("---------------------------------------------------------------");
+		System.out.println();
 	}
 }
