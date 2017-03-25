@@ -96,6 +96,25 @@ public class Table {
 			db.printTuples();
 		}
 	}
+	
+	public List<Tuple> allTuples() throws IOException {
+		int qtBlock = this.header.lastBlock();
+		List<Tuple> tuples = new ArrayList<Tuple>();
+		if (dataBlocks.size() != qtBlock) {
+			dataBlocks.clear();
+			for (int i = 1; i <= qtBlock; i ++) {
+				dataBlocks.add(new DataBlock(this, i));
+			}
+		}
+
+		for (DataBlock db: dataBlocks) {
+			db.load();
+			db.loadTuples();
+			tuples.addAll(db.getTuples());
+		}
+		
+		return tuples;
+	}
 
 	public RandomAccessFile getContainerFile() {
 		return file;
@@ -121,17 +140,22 @@ public class Table {
 		return this.nome;
 	}
 	
-	public void print() throws IOException {
-		this.load();
-		System.out.println("TABELA: " + this.nome.toUpperCase());
-		header.print();
-		System.out.println("\tCOLUNAS:");
+	public String print() {
+		String s = 
+		"TABELA: " + this.nome.toUpperCase() + "\n" +
+		header.print() + "\n" +
+		"\tCOLUNAS:";
 		for (ColumnDescriptor columnDescriptor : columns) {
-			System.out.println("\t\tNOME: " + columnDescriptor.getName());
-			System.out.println("\t\tTIPO: " + columnDescriptor.getType());
-			System.out.println("\t\tTAMANHO: " + columnDescriptor.getSize() + " Bytes");
-			System.out.println("\t\t------------------");
+			s += "\t\tNOME: " + columnDescriptor.getName() + "\n" +
+			("\t\tTIPO: " + columnDescriptor.getType()) + "\n" +
+			("\t\tTAMANHO: " + columnDescriptor.getSize() + " Bytes") + "\n" +
+			("\t\t------------------");
 		}
-
+		return s;
+	}
+	
+	public String toString() {
+		return this.nome;
+		
 	}
 }

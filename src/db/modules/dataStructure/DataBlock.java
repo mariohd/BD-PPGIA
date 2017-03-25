@@ -22,6 +22,10 @@ public class DataBlock {
 	public boolean availableSpaceFor(int tupleSize) {
 		return this.header.getUsedSpace() + 8 + tupleSize <= FileSystem.pageSize;
 	}
+	
+	public List<Tuple> getTuples() {
+		return this.tuples;
+	}
 
 	public boolean save() throws IOException {
 		return header.save();

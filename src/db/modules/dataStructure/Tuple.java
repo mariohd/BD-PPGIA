@@ -2,8 +2,11 @@ package db.modules.dataStructure;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import db.Utils;
 import db.modules.descriptors.ColumnDescriptor;
@@ -13,6 +16,10 @@ public class Tuple {
 
 	public Tuple(Map<ColumnDescriptor, Object> columns) {
 		this.columns = columns;
+	}
+	
+	public Collection<Object> values() {
+		return this.columns.values();
 	}
 	
 	public Tuple() {}
@@ -89,6 +96,10 @@ public class Tuple {
 						);
 		}
 		return size;
+	}
+	
+	public Set<ColumnDescriptor> getColumns() {
+		return this.columns.keySet();
 	}
 
 	public void print() {
