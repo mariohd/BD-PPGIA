@@ -63,7 +63,7 @@ public class Table {
 		Tuple tp = new Tuple(tuple);
 		db.load();
 		if (db.availableSpaceFor(tp.size())) {
-			db.insert(tuple);
+			db.insert(tp);
 		} else {
 			this.header.updateNextWritingBlock();
 			this.insert(tuple);

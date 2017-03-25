@@ -97,51 +97,17 @@ public class DataBlock {
 		return cursor + columnSize;
 	}
 	
-	public boolean insert(Map<ColumnDescriptor, Object> tuple) throws IOException {
-
+	public boolean insert(Tuple tuple) throws IOException {
 		int currentUsedSpace = this.header.writeStart();
-		int tupleSize = 4;
-		int location = currentUsedSpace + tupleSize;
-		
-		for (ColumnDescriptor column : tuple.keySet()) {
-			Object value = tuple.get(column);
-			tupleSize += writeColumn(column, value, location);
-			location = currentUsedSpace + tupleSize;
-		}
+		byte[] tpBytes = tuple.inBytes();
 		
 		RandomAccessFile file =  this.parent.getContainerFile();
 		
 		file.seek(currentUsedSpace);
-		file.write(Utils.toByteArray(tupleSize, 4));
+		file.write(tpBytes);
 		
-		this.header.updateUsedSpace(this.header.getUsedSpace() + tupleSize);
+		this.header.updateUsedSpace(this.header.getUsedSpace() + tuple.size());
 		
 		return true;
-	}
-
-
-	private int writeColumn(ColumnDescriptor column, Object value, int location) throws IOException {
-		
-		int columnSize = 0;
-		byte[] byteValue;
-		if (column.getType() == Integer.class) {
-			int intValue = (int) value;
-			byteValue = Utils.toByteArray(intValue);
-			columnSize = byteValue.length;
-		} else {
-			String stringValue = (String) value;
-			byteValue = stringValue.getBytes();
-			columnSize = byteValue.length;
-		}
-		
-		RandomAccessFile file =  this.parent.getContainerFile();
-		
-		file.seek(location);
-		file.write(Utils.toByteArray(columnSize, 2));
-		
-		file.seek(location + 2);
-		file.write(byteValue);
-		
-		return columnSize + 2;
 	}
 }
