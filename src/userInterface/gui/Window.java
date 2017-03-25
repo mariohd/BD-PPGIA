@@ -58,6 +58,8 @@ public class Window extends JFrame {
 	}
 	
 	private void config() {
+		this.setIconImage(Icons.getIcon("icons/database.png").getImage());
+		
 		tableMenu.add(addTable);
 		addTable.setIcon(Icons.getIcon("icons/plus.png", new Dimension(16, 16)));
 		tableMenu.addSeparator();
