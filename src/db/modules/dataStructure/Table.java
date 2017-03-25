@@ -57,16 +57,18 @@ public class Table {
 		return header.load();
 	}
 	
-	public boolean insert(Map<ColumnDescriptor, Object> tuple) throws IOException {
+	public boolean insert(Map<ColumnDescriptor, Object> values) throws IOException {
 		this.load();
+
 		DataBlock db = this.header.getNextWritingBlock();
-		Tuple tp = new Tuple(tuple);
+		Tuple tuple = new Tuple(values);
+
 		db.load();
-		if (db.availableSpaceFor(tp.size())) {
-			db.insert(tp);
+		if (db.availableSpaceFor(tuple.size())) {
+			db.insert(tuple);
 		} else {
 			this.header.updateNextWritingBlock();
-			this.insert(tuple);
+			this.insert(values);
 		}
 
 		return true;

@@ -7,7 +7,7 @@ import db.modules.descriptors.ColumnDescriptor;
 
 public class Tuple {
 	private Map<ColumnDescriptor, Object> columns;
-	
+
 	public Tuple(Map<ColumnDescriptor, Object> columns) {
 		this.columns = columns;
 	}

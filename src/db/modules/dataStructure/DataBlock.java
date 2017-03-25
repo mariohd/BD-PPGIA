@@ -3,7 +3,6 @@ package db.modules.dataStructure;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
-import java.util.Map;
 
 import db.Utils;
 import db.modules.descriptors.ColumnDescriptor;
