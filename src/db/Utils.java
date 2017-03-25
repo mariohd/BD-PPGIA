@@ -38,4 +38,11 @@ public class Utils {
 		}
 		return "";
 	}
+
+	public static byte[] putIn(byte[] v, int s, byte[] t) {
+		for (int i = 0; i < t.length; s++, i++) {
+			v[s] = t[i];
+		}
+		return v;
+	}
 }
