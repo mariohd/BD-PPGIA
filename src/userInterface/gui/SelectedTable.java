@@ -1,8 +1,13 @@
 package userInterface.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.io.IOException;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -30,9 +35,12 @@ public class SelectedTable extends JPanel {
 		this.structure = new TableStructurePanel(table);
 		this.content = new TableContentPanel(table);
 		this.query = new JPanel();
-		abas.add("Estrutura", structure);
-		abas.add("Conteúdo", content);
-		abas.add("Consulta", query);
+		ImageIcon structureIcon = new ImageIcon( this.getClass().getResource("icons/structure-plan.png"));
+		ImageIcon contentIcon = new ImageIcon( this.getClass().getResource("icons/folder.png"));
+		ImageIcon queryIcon = new ImageIcon( this.getClass().getResource("icons/file.png"));
+		abas.addTab("Estrutura",structureIcon, structure);
+		abas.addTab("Conteúdo", contentIcon, content);
+		abas.addTab("Consulta", queryIcon, query);
 		this.add(abas, BorderLayout.CENTER);
 	}
 }
