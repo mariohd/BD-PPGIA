@@ -97,12 +97,14 @@ public class TableHeader {
 		return true;
 	}
 	
-	public void print() {
-		System.out.println("\tCONTAINER: " + container);
-		System.out.println("\tTAMANHO DO BLOCO: " + Utils.toInt(blockSize, 0));
-		System.out.println("\tCONTAINER STATUS: " + containerStatus);
-		System.out.println("\tPROXIMO BLOCK DE ESCRITA: " + Utils.toInt(nextWritingBlock, 0));
-		System.out.println("\tTAMANHO DO DESCRITOR: " + Utils.toInt(headerDescriptorSize, 0));
+	public String print() {
+		String s = 
+			 ("\tCONTAINER: " + container) + "\n"
+			+ ("\tTAMANHO DO BLOCO: " + Utils.toInt(blockSize, 0))+ "\n"
+			+ ("\tCONTAINER STATUS: " + containerStatus)+ "\n"
+			+ ("\tPROXIMO BLOCK DE ESCRITA: " + Utils.toInt(nextWritingBlock, 0))+ "\n"
+			+ ("\tTAMANHO DO DESCRITOR: " + Utils.toInt(headerDescriptorSize, 0))+ "\n";
+		return s;
 	}
 
 	public DataBlock getNextWritingBlock() {

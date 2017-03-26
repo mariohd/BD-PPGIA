@@ -22,6 +22,10 @@ public class DataBlock {
 	public boolean availableSpaceFor(int tupleSize) {
 		return this.header.getUsedSpace() + 8 + tupleSize <= FileSystem.pageSize;
 	}
+	
+	public List<Tuple> getTuples() {
+		return this.tuples;
+	}
 
 	public boolean save() throws IOException {
 		return header.save();
@@ -31,10 +35,12 @@ public class DataBlock {
 		return header.load();
 	}
 	
-	public void printTuples() {
+	public String printTuples() {
+		String tuplesS = "";
 		for (Tuple tuple : tuples) {
-			tuple.print();
+			tuplesS += tuple.print();
 		}
+		return tuplesS;
 	}
 	
 	public boolean loadTuples() throws IOException {
