@@ -143,13 +143,13 @@ public class Table {
 	public String print() {
 		String s = 
 		"TABELA: " + this.nome.toUpperCase() + "\n" +
-		header.print() + "\n" +
-		"\tCOLUNAS:";
+		header.print()  +
+		"\tCOLUNAS: \n";
 		for (ColumnDescriptor columnDescriptor : columns) {
 			s += "\t\tNOME: " + columnDescriptor.getName() + "\n" +
 			("\t\tTIPO: " + columnDescriptor.getType()) + "\n" +
 			("\t\tTAMANHO: " + columnDescriptor.getSize() + " Bytes") + "\n" +
-			("\t\t------------------");
+			("\t\t------------------\n");
 		}
 		return s;
 	}

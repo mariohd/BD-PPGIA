@@ -193,7 +193,7 @@ public class cli {
 			
 			try {
 				tb.load();
-				tb.print();
+				syso(tb.print());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
