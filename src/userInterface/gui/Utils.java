@@ -9,4 +9,8 @@ public class Utils {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		return screenSize;
 	}
+	
+	public static String leadingZeros(int number) {
+		return ("00" + number).substring(("" + number).length());
+	}
 }

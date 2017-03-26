@@ -35,7 +35,7 @@ public class SelectedTable extends JPanel {
 	}
 	
 	private void mount() {
-		ImageIcon structureIcon = Icons.getIcon("icons/structure-plan.png");
+		ImageIcon structureIcon = Icons.getIcon("icons/structure.png");
 		ImageIcon contentIcon = Icons.getIcon("icons/folder.png");
 		ImageIcon queryIcon = Icons.getIcon("icons/search.png");
 		

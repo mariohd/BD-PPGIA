@@ -55,18 +55,22 @@ public class Window extends JFrame {
 		this.setSize(resolution);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
+		this.setTitle("PPGIA_Db");
+		this.setIconImage(Icons.getIcon("icons/database.png").getImage());
 	}
 	
-	private void config() {
-		this.setIconImage(Icons.getIcon("icons/database.png").getImage());
-		
+	private void config() {		
 		tableMenu.add(addTable);
-		addTable.setIcon(Icons.getIcon("icons/plus.png", new Dimension(16, 16)));
+		addTable.setIcon(Icons.getIcon("icons/plus.png", new Dimension(24, 24)));
 		tableMenu.addSeparator();
 		tableMenu.add(refreshTables);
-		refreshTables.setIcon(Icons.getIcon("icons/refresh.png", new Dimension(16, 16)));
+		refreshTables.setIcon(Icons.getIcon("icons/refresh.png", new Dimension(24, 24)));
 		menuBar.add(tableMenu);
-		setJMenuBar(menuBar);
+		/*
+		for (Table t : fs.getTables()) {
+			comboTables.addItem(t);
+		}
+		*/
 		configActions();
 	}
 	
@@ -75,7 +79,14 @@ public class Window extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				Runnable callback = new Runnable() {
+					@Override
+					public void run() {
+						refreshTables();
+					}
+				};
 				
+				new AddTableFrame(callback);
 			}
 		});
 		
@@ -83,7 +94,7 @@ public class Window extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				refreshTables();
 			}
 		});
 		
@@ -94,23 +105,30 @@ public class Window extends JFrame {
 				if (center.isShowing()) remove(center);
 				center = new SelectedTable((Table) comboTables.getSelectedItem());
 				add(center, BorderLayout.CENTER);
+				validate();
 				repaint();
-				revalidate();
 			}
 		});
 	}
 	
-	private void mount() {
-		JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		
+	private void refreshTables() {
+		comboTables.removeAllItems();
+		fs = new FileSystem();
 		for (Table t : fs.getTables()) {
 			comboTables.addItem(t);
 		}
+		validate();
+		repaint();
+	}
+		
+	private void mount() {		
+		JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		
 		northPanel.add(new JLabel("Tabela: "));
 		northPanel.add(comboTables);
 		northPanel.add(confirmTable);
 		
+		this.setJMenuBar(menuBar);
 		this.add(northPanel, BorderLayout.NORTH);
 	}
 }
