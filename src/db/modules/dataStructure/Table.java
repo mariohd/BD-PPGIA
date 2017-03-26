@@ -79,23 +79,6 @@ public class Table {
 
 		return true;
 	}
-
-	public void printTuples() throws IOException {
-		int qtBlock = this.header.lastBlock();
-
-		if (dataBlocks.size() != qtBlock) {
-			dataBlocks.clear();
-			for (int i = 1; i <= qtBlock; i ++) {
-				dataBlocks.add(new DataBlock(this, i));
-			}
-		}
-
-		for (DataBlock db: dataBlocks) {
-			db.load();
-			db.loadTuples();
-			db.printTuples();
-		}
-	}
 	
 	public List<Tuple> allTuples() throws IOException {
 		int qtBlock = this.header.lastBlock();
@@ -146,7 +129,8 @@ public class Table {
 		header.print()  +
 		"\tCOLUNAS: \n";
 		for (ColumnDescriptor columnDescriptor : columns) {
-			s += "\t\tNOME: " + columnDescriptor.getName() + "\n" +
+			s += 
+			"\t\tNOME: " + columnDescriptor.getName() + "\n" +
 			("\t\tTIPO: " + columnDescriptor.getType()) + "\n" +
 			("\t\tTAMANHO: " + columnDescriptor.getSize() + " Bytes") + "\n" +
 			("\t\t------------------\n");

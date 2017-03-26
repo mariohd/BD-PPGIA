@@ -101,12 +101,11 @@ public class Tuple {
 		return this.columns.keySet();
 	}
 
-	public void print() {
+	public String print() {
+		String tuple = "";
 		for (ColumnDescriptor column : columns.keySet()) {
-			System.out.println("\t" + column.getName());
-			System.out.println("\t\t" + columns.get(column));
+			tuple +=  "\t" + columns.get(column).toString().length();
 		}
-		System.out.println("---------------------------------------------------------------");
-		System.out.println();
+		return tuple + "\n";
 	}
 }

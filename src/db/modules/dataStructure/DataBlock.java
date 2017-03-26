@@ -35,10 +35,12 @@ public class DataBlock {
 		return header.load();
 	}
 	
-	public void printTuples() {
+	public String printTuples() {
+		String tuplesS = "";
 		for (Tuple tuple : tuples) {
-			tuple.print();
+			tuplesS += tuple.print();
 		}
+		return tuplesS;
 	}
 	
 	public boolean loadTuples() throws IOException {

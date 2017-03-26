@@ -1,4 +1,4 @@
-package userInterface;
+package userInterface.cli;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import db.modules.dataStructure.Table;
+import db.modules.dataStructure.Tuple;
 import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
 
@@ -73,9 +74,30 @@ public class cli {
 
 	private static void readTable(Table t) {
 		try {
-			t.printTuples();
+			TableBuilder tb = new TableBuilder();
+			
+			List<ColumnDescriptor> columns = t.getColumns();
+			String[] columnsName = new String[columns.size()];
+			int index = 0;
+			for (ColumnDescriptor columnDescriptor : columns) {
+				columnsName[index] = (columnDescriptor.getName().toUpperCase());
+				index++;
+			}
+			tb.addRow(columnsName);
+			List<Tuple> allTuples = t.allTuples();
+			for (Tuple tuple : allTuples) {
+				String[] tx = new String[columns.size()];
+				index = 0;				
+				for (Object value : tuple.values()) {
+					tx[index] = value.toString();
+					index++;
+				}
+				tb.addRow(tx);
+			} 
+			
+			syso(tb.toString());
 			operationsWithTuples(t);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -125,7 +147,7 @@ public class cli {
 			mainMenu();
 			break;
 		default:
-			System.err.println("Opção inválida");
+			syse("Opção inválida");
 			operationsWithTables();
 		}
 	}
