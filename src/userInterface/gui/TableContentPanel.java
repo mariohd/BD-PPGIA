@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -60,7 +61,15 @@ public class TableContentPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				Runnable callback = new Runnable() {
+					
+					@Override
+					public void run() {
+						JOptionPane.showMessageDialog(null, "nada");
+					}
+				};
 				
+				new AddTupleFrame(table, callback);
 			}
 		});
 	}
