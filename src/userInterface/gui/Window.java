@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -31,6 +32,11 @@ public class Window extends JFrame {
 	private JMenuItem addTable;
 	private JMenuItem refreshTables;
 	
+	private JMenu bufferMenu;
+	private JMenuItem viewBuffer;
+	private JMenu bufferAlgorithms;
+	private JMenuItem lruAlgorithm;
+	
 	public Window(FileSystem fs) {
 		this.fs = fs;
 		this.comboTables = new JComboBox<Table>();
@@ -41,6 +47,11 @@ public class Window extends JFrame {
 		this.tableMenu = new JMenu("Tabelas");
 		this.addTable = new JMenuItem("Adicionar");
 		this.refreshTables = new JMenuItem("Atualizar");
+		
+		this.bufferMenu = new JMenu("Buffer");
+		this.viewBuffer = new JMenuItem("Ver Buffer");
+		this.bufferAlgorithms = new JMenu("Algoritmos");
+		this.lruAlgorithm = new JMenuItem("LRU");
 		
 		init();
 		config();
@@ -65,12 +76,19 @@ public class Window extends JFrame {
 		tableMenu.addSeparator();
 		tableMenu.add(refreshTables);
 		refreshTables.setIcon(Icons.getIcon("icons/refresh.png", new Dimension(24, 24)));
+		
+		bufferMenu.add(viewBuffer);
+		viewBuffer.setIcon(Icons.getIcon("icons/buffer.png", new Dimension(24, 24)));
+		bufferAlgorithms.setIcon(Icons.getIcon("icons/algorithm.png", new Dimension(24, 24)));
+		bufferAlgorithms.add(lruAlgorithm);
+		bufferMenu.add(bufferAlgorithms);
+		
 		menuBar.add(tableMenu);
-		/*
+		menuBar.add(bufferMenu);
+		
 		for (Table t : fs.getTables()) {
 			comboTables.addItem(t);
 		}
-		*/
 		configActions();
 	}
 	
