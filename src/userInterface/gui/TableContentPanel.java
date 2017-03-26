@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,12 +22,14 @@ public class TableContentPanel extends JPanel {
 	private List<Tuple> tuples;
 	private TableModel tableModel;
 	private JTable jTable;
+	private Runnable callback;
 	
 	private JButton addTuple;
 	
-	public TableContentPanel(Table table) {
+	public TableContentPanel(Table table, Runnable callback) {
 		try {
 			this.table = table;
+			this.callback = callback;
 			this.tuples = this.table.allTuples();
 			
 			this.tableModel = new TupleTableModel(this.tuples);
@@ -45,7 +46,7 @@ public class TableContentPanel extends JPanel {
 	}
 	
 	private void init() {
-		setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout());
 	}
 	
 	private void mount() {
@@ -65,12 +66,21 @@ public class TableContentPanel extends JPanel {
 					
 					@Override
 					public void run() {
-						JOptionPane.showMessageDialog(null, "nada");
+						try {
+							update();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
 					}
 				};
 				
 				new AddTupleFrame(table, callback);
 			}
 		});
+	}
+	
+	private void update() throws IOException {
+		this.callback.run();
 	}
 }

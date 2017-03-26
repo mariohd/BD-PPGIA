@@ -21,7 +21,13 @@ public class SelectedTable extends JPanel {
 			this.table = table;
 			this.table.load();
 			this.structure = new TableStructurePanel(table);
-			this.content = new TableContentPanel(table);
+			this.content = new TableContentPanel(table, new Runnable() {
+				
+				@Override
+				public void run() {
+					updateTuples();
+				}
+			});
 			this.query = new JPanel();
 			this.init();
 			this.mount();
@@ -39,9 +45,25 @@ public class SelectedTable extends JPanel {
 		ImageIcon contentIcon = Icons.getIcon("icons/folder.png");
 		ImageIcon queryIcon = Icons.getIcon("icons/search.png");
 		
-		tabs.addTab("Estrutura",structureIcon, structure);
+		tabs.addTab("Estrutura", structureIcon, structure);
 		tabs.addTab("Conteúdo", contentIcon, content);
 		tabs.addTab("Consulta", queryIcon, query);
 		this.add(tabs, BorderLayout.CENTER);
+	}
+	
+	private void updateTuples() {
+		tabs.removeAll();
+		
+		content = new TableContentPanel(table, new Runnable() {
+			@Override
+			public void run() {
+				updateTuples();
+			}
+		});
+		
+		mount();
+		tabs.setSelectedIndex(1);
+		validate();
+		repaint();
 	}
 }

@@ -3,6 +3,10 @@ package userInterface.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +16,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -40,6 +45,7 @@ public class AddTupleFrame extends JFrame {
 		this.values = new LinkedHashMap<ColumnDescriptor, Object>();
 		
 		init();
+		configActions();
 		mount();
 		this.setVisible(true);
 	}
@@ -64,10 +70,40 @@ public class AddTupleFrame extends JFrame {
 				columnsPanel.add(tcf);
 			}
 		}
+		
 		JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		p.add(columnsPanel);
+		JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		south.add(confirmTuple);
+		
 		this.add(new JScrollPane(p), BorderLayout.CENTER);
-		this.add(confirmTuple, BorderLayout.SOUTH);
+		this.add(south, BorderLayout.SOUTH);
+	}
+	
+	private void configActions() {
+		final JFrame self = this;
+		confirmTuple.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					for (TupleColumnForm tupleColumnForm : columnForms) {
+						values.put(tupleColumnForm.getColumnKey(), tupleColumnForm.getValue());
+					}
+					
+					if (table.insert(values)) {
+						setVisible(false);
+						JOptionPane.showMessageDialog(null, "Linha salva com sucesso!", "Mensagem", JOptionPane.INFORMATION_MESSAGE, Icons.getIcon("icons/ok.png"));
+						callback.run();
+						self.dispatchEvent(new WindowEvent(self, WindowEvent.WINDOW_CLOSING));
+					} else {
+						JOptionPane.showMessageDialog(null, "Algo deu errado =/", "Não salvou", JOptionPane.ERROR_MESSAGE, Icons.getIcon("icons/error.png"));
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	public class TupleColumnForm extends JPanel {
@@ -95,7 +131,7 @@ public class AddTupleFrame extends JFrame {
 			return column.getType() == Integer.class ? Integer.valueOf(columnValue.getText()) : columnValue.getText();
 		}
 		
-		public ColumnDescriptor getColumn() {
+		public ColumnDescriptor getColumnKey() {
 			return this.column;
 		}
 	}
