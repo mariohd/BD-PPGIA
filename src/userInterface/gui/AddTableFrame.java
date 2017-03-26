@@ -1,6 +1,7 @@
 package userInterface.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -146,13 +148,36 @@ public class AddTableFrame extends JFrame {
 			this.columnSize.setColumns(8);
 			this.columnType.addItem("Integer");
 			this.columnType.addItem("String");
+			this.columnName.setAlignmentX(LEFT_ALIGNMENT);
+			this.columnType.setAlignmentX(LEFT_ALIGNMENT);
+			this.columnSize.setAlignmentX(LEFT_ALIGNMENT);
 		}
 		
 		private void mount() {
-			this.add(indexLabel);
-			this.add(columnName);
-			this.add(columnType);
-			this.add(columnSize);
+			
+			JPanel indexPanel = new JPanel();
+			indexPanel.add(indexLabel);
+			
+			JPanel namePanel = new JPanel();
+			namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
+			namePanel.add(new JLabel("Campo: "));
+			namePanel.add(columnName);
+			
+			JPanel typePanel = new JPanel();
+			typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.Y_AXIS));
+			typePanel.add(new JLabel("Tipo: "));
+			typePanel.add(columnType);
+			
+			JPanel sizePanel = new JPanel();
+			sizePanel.setLayout(new BoxLayout(sizePanel, BoxLayout.Y_AXIS));
+			sizePanel.add(new JLabel("Tamanho: "));
+			sizePanel.add(columnSize);
+			
+			this.add(indexPanel);
+			this.add(namePanel);
+			this.add(typePanel);
+			this.add(sizePanel);
+			this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.LIGHT_GRAY));
 		}
 	}
 	
