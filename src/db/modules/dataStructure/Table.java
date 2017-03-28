@@ -21,7 +21,6 @@ import db.modules.metaStructure.TableHeader;
 
 public class Table {
 	private final String nome;
-	private List<ColumnDescriptor> columns;
 	private List<DataBlock> dataBlocks;
 	private byte container;
 	private RandomAccessFile file;
@@ -35,16 +34,6 @@ public class Table {
 		this.header = new TableHeader(this);
 		this.filePath = "database/data/" + this.nome + ".tb";
 		this.file = new RandomAccessFile(filePath, "rw");
-		this.dataBlocks = new ArrayList<DataBlock>();
-	}
-	
-	public Table(String nome, List<ColumnDescriptor> columns, byte container) {
-		super();
-		this.nome = nome;
-		this.columns = columns;
-		this.container = container;
-		this.filePath = "database/data/" + this.nome + ".tb";
-		this.header = new TableHeader(this);
 		this.dataBlocks = new ArrayList<DataBlock>();
 	}
 	
@@ -70,7 +59,6 @@ public class Table {
 			buffer.addMiss();
 		} else {
 			this.header = (TableHeader) buffer.getNode(blockIdent).getValue().get();
-			this.columns = this.header.getColumns();
 			buffer.addHit();
 		}
 		
@@ -124,7 +112,7 @@ public class Table {
 	}
 	
 	public List<ColumnDescriptor> getColumns() {
-		return columns;
+		return this.header.getColumns();
 	}
 
 	public byte getContainer() {
@@ -136,7 +124,7 @@ public class Table {
 	}
 	
 	public void setColumns(List<ColumnDescriptor> columns) {
-		this.columns = columns;
+		this.header.setColumns(columns);
 	}
 	
 	public String getNome() {
@@ -148,7 +136,7 @@ public class Table {
 		"TABELA: " + this.nome.toUpperCase() + "\n" +
 		header.print()  +
 		"\tCOLUNAS: \n";
-		for (ColumnDescriptor columnDescriptor : columns) {
+		for (ColumnDescriptor columnDescriptor : getColumns()) {
 			s += 
 			"\t\tNOME: " + columnDescriptor.getName() + "\n" +
 			("\t\tTIPO: " + columnDescriptor.getType()) + "\n" +

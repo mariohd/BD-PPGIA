@@ -19,14 +19,13 @@ public class TableHeader implements PageBlock {
 	private byte[] blockSize = new byte[3];
  	private byte[] headerDescriptorSize = new byte[2];
 	private byte[] nextWritingBlock = new byte[4];
-	private List<ColumnDescriptor> parentColumns;
+	private List<ColumnDescriptor> columns;
 	
 	public TableHeader(Table parent) {
 		this.parent = parent;
 		this.blockSize = Utils.toByteArray(FileSystem.pageSize, 3);
 		this.container = this.parent.getContainer();
 		this.nextWritingBlock = Utils.toByteArray(1, 4);
-		this.parentColumns = parent.getColumns();
 	}
 
 	public boolean save() throws IOException {
@@ -90,7 +89,7 @@ public class TableHeader implements PageBlock {
 		
 		String stringColumns = Utils.asString(byteColumns);
 		
-		List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
+		columns = new ArrayList<ColumnDescriptor>();
 		
 		for (String column : stringColumns.split(";")) {
 			String[] att = column.split("%");
@@ -102,8 +101,6 @@ public class TableHeader implements PageBlock {
 					)
 			);
 		}
-		this.parentColumns = columns;
-		this.parent.setColumns(columns);
 	}
 	
 	
@@ -153,7 +150,11 @@ public class TableHeader implements PageBlock {
 		return "{ " + this.container + ".0 }";
 	}
 
+	public void setColumns(List<ColumnDescriptor> columns) {
+		this.columns = columns;
+	}
+
 	public List<ColumnDescriptor> getColumns() {
-		return parentColumns;
+		return columns;
 	}
 }

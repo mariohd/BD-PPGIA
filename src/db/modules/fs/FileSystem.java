@@ -53,14 +53,14 @@ public class FileSystem {
 		} 
 		return -1;
 	}
-	
+
 	public boolean createTable(String tableName, List<ColumnDescriptor> columns) throws IOException {
 		columns.add(0, new ColumnDescriptor("ROWID", String.class, 10));
-		Table t = new Table(tableName, 
-							columns, 
-							new Integer(FileSystem.getTableContainerCount()).byteValue());
-		if (t.save()) {
-			tables.add(t);
+
+		Table newTable = new Table(new Integer(FileSystem.getTableContainerCount()).byteValue(), tableName);
+		newTable.setColumns(columns);
+		if (newTable.save()) {
+			tables.add(newTable);
 			saveTableOnConf();
 			return true;
 		} else {
