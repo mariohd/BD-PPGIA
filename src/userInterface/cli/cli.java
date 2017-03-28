@@ -212,7 +212,7 @@ public class cli {
 		
 		int index = 1;
 		
-		for (Table table : fs.getTables()) {
+		for (Table table : fs.getTables().values()) {
 			syso("\t" + (index) + " - " + table.getNome());
 			index ++;
 		}

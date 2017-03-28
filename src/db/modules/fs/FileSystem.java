@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.Utils;
 import db.modules.buffer.BufferController;
@@ -21,12 +22,12 @@ public class FileSystem {
 	private static final String fileSystemControl = "database/conf.fsc";
 	public static final int pageSize = 8 * 1024;
 	
-	private List<Table> tables;
+	private Map<Integer, Table> tables;
 	private BufferAlgorithm<PageBlock> buffer;
 	
 	public FileSystem() {
 		try {
-			this.tables = new ArrayList<Table>();
+			this.tables = new LinkedHashMap<Integer, Table>();
 			this.buffer = BufferController.getLRUAlgorithm();
 			this.preLoadTables();
 		} catch (IOException e) {
@@ -60,7 +61,7 @@ public class FileSystem {
 		Table newTable = new Table(new Integer(FileSystem.getTableContainerCount()).byteValue(), tableName);
 		newTable.setColumns(columns);
 		if (newTable.save()) {
-			tables.add(newTable);
+			tables.put(new Integer(newTable.getContainer()).intValue(), newTable);
 			saveTableOnConf();
 			return true;
 		} else {
@@ -68,30 +69,26 @@ public class FileSystem {
 		}
 	}
 	
-	public List<Table> getTables() {
+	public Map<Integer, Table> getTables() {
 		return this.tables;
 	}
 	
 	public DataBlock getDataBlock(String rowid) throws IOException {
 		DataBlock db = null;
+		
 		String[] parts = rowid.split("\\.");
 		int container = Integer.valueOf(parts[0]);
 		int blockId = Integer.valueOf(parts[1]);
 		String blockIdent = container + "." + blockId;
+		
 		if (buffer.getNode(blockIdent) != null) {
 			db = (DataBlock) buffer.getNode(blockIdent).getValue().get();
 			buffer.addHit();
 		} else {
 			
-			Table i = null;
+			Table t = tables.get(container);
 			
-			for (Table t : tables) {
-				if (t.getContainer() == container) {
-					i = t;
-				}
-			}
-			
-			db = new DataBlock(i, blockId);
+			db = new DataBlock(t, blockId);
 			db.load();
 			
 			buffer.set(blockIdent, db);
@@ -132,7 +129,9 @@ public class FileSystem {
 			byte index = 0;
 			if (names != null && ! "".equals(names)) {
 				for (String tableName : names.split(";")) {
-					tables.add(new Table(index, tableName.substring(2)));
+					tables.put(
+							new Integer(index).intValue(), 
+							new Table(index, tableName.substring(2)));
 					index++;
 				}
 			}
@@ -151,7 +150,7 @@ public class FileSystem {
 			file = new RandomAccessFile(fileSystemControl, "rw");
 
 			String names = "";
-			for (Table t : tables) {
+			for (Table t : tables.values()) {
 				names += "T=" + t.getNome() + ";";
 			}
 			

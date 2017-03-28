@@ -34,7 +34,7 @@ public class LoadTPCHForn {
 		
 		FileSystem fs = new FileSystem();
 		Table tb = null;
-		for (Table ts : fs.getTables()) {
+		for (Table ts : fs.getTables().values()) {
 			if (ts.getNome() == "TPCH_FORN") {
 				tb = ts;
 			}
@@ -44,7 +44,7 @@ public class LoadTPCHForn {
 			fs.createTable("TPCH_FORN", columns);
 			columns.remove(0);
 			
-			for (Table ts : fs.getTables()) {
+			for (Table ts : fs.getTables().values()) {
 				if (ts.getNome() == "TPCH_FORN") {
 					tb = ts;
 				}

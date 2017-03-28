@@ -85,7 +85,7 @@ public class Window extends JFrame {
 		menuBar.add(tableMenu);
 		menuBar.add(bufferMenu);
 		
-		for (Table t : fs.getTables()) {
+		for (Table t : fs.getTables().values()) {
 			comboTables.addItem(t);
 		}
 		configActions();
@@ -131,7 +131,7 @@ public class Window extends JFrame {
 	private void refreshTables() {
 		comboTables.removeAllItems();
 		fs = new FileSystem();
-		for (Table t : fs.getTables()) {
+		for (Table t : fs.getTables().values()) {
 			comboTables.addItem(t);
 		}
 		validate();

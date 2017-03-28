@@ -118,10 +118,6 @@ public class Table {
 	public byte getContainer() {
 		return container;
 	}
-
-	public void setContainer(byte container) {
-		this.container = container;
-	}
 	
 	public void setColumns(List<ColumnDescriptor> columns) {
 		this.header.setColumns(columns);

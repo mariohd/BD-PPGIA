@@ -36,7 +36,7 @@ public static void main(String[] args) throws IOException {
 		
 		FileSystem fs = new FileSystem();
 		Table tb = null;
-		for (Table ts : fs.getTables()) {
+		for (Table ts : fs.getTables().values()) {
 			if (ts.getNome() == "TPCH_CLI") {
 				tb = ts;
 			}
@@ -46,7 +46,7 @@ public static void main(String[] args) throws IOException {
 			fs.createTable("TPCH_CLI", columns);
 			columns.remove(0);
 			
-			for (Table ts : fs.getTables()) {
+			for (Table ts : fs.getTables().values()) {
 				if (ts.getNome() == "TPCH_CLI") {
 					tb = ts;
 				}
