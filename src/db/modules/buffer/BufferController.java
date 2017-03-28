@@ -1,10 +1,21 @@
 package db.modules.buffer;
 
-import db.modules.dataStructure.DataBlock;
+import db.modules.buffer.algorithm.BufferAlgorithm;
+import db.modules.buffer.algorithm.LRU;
+import db.modules.metaStructure.PageBlock;
 
 public class BufferController {
 	
-	public static BufferAlgorithm<DataBlock> getLRUAlgorithm(int size) {
-		return new LRU<DataBlock>(size);
+	private static BufferAlgorithm<PageBlock> sharedBuffer;
+	
+	public static BufferAlgorithm<PageBlock> getLRUAlgorithm() {
+		if (sharedBuffer == null)
+			sharedBuffer = new LRU<PageBlock>(2000);
+		return sharedBuffer;
+	}
+	
+	public static BufferAlgorithm<PageBlock> createLRUAlgorithm(int size) {
+		sharedBuffer = new LRU<PageBlock>(size);
+		return sharedBuffer;
 	}
 }

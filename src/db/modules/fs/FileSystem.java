@@ -8,19 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.Utils;
+import db.modules.buffer.BufferController;
+import db.modules.buffer.algorithm.BufferAlgorithm;
+import db.modules.dataStructure.DataBlock;
 import db.modules.dataStructure.Table;
+import db.modules.dataStructure.Tuple;
 import db.modules.descriptors.ColumnDescriptor;
+import db.modules.metaStructure.PageBlock;
 
 public class FileSystem {
 	
 	private static final String fileSystemControl = "database/conf.fsc";
-	public static final int pageSize = 1 * 1024;
+	public static final int pageSize = 8 * 1024;
 	
 	private List<Table> tables;
+	private BufferAlgorithm<PageBlock> buffer;
 	
 	public FileSystem() {
 		try {
 			this.tables = new ArrayList<Table>();
+			this.buffer = BufferController.getLRUAlgorithm();
 			this.preLoadTables();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -65,9 +72,35 @@ public class FileSystem {
 		return this.tables;
 	}
 	
-	/*
-	 ************** PRIVATE METHODS ************
-	*/
+	public DataBlock getDataBlock(String rowid) throws IOException {
+		DataBlock db = null;
+		String[] parts = rowid.split("\\.");
+		int container = Integer.valueOf(parts[0]);
+		int blockId = Integer.valueOf(parts[1]);
+		String blockIdent = container + "." + blockId;
+		if (buffer.getNode(blockIdent) != null) {
+			db = (DataBlock) buffer.getNode(blockIdent).getValue().get();
+			buffer.addHit();
+		} else {
+			
+			Table i = null;
+			
+			for (Table t : tables) {
+				if (t.getContainer() == container) {
+					i = t;
+				}
+			}
+			
+			db = new DataBlock(i, blockId);
+			db.load();
+			
+			buffer.set(blockIdent, db);
+			buffer.addMiss();
+		}
+		
+		return db;
+	}
+	
 	private static void setTableContainerCount(int container) {
 		RandomAccessFile file = null;
 		try {
@@ -96,9 +129,11 @@ public class FileSystem {
 			
 			String names = new String(tableNamesBytes, "UTF-8");
 			
+			byte index = 0;
 			if (names != null && ! "".equals(names)) {
 				for (String tableName : names.split(";")) {
-					tables.add(new Table(tableName.substring(2)));
+					tables.add(new Table(index, tableName.substring(2)));
+					index++;
 				}
 			}
 			file.close();
@@ -132,5 +167,12 @@ public class FileSystem {
 			setTableContainerCount(0);
 			saveTableOnConf();
 		}
+	}
+
+	public Tuple search(String rowid) throws IOException {
+		DataBlock db = getDataBlock(rowid);
+		db.getParent().load();
+		String[] parts = rowid.split("\\.");
+		return db.getTuple(Integer.valueOf(parts[2]));
 	}
 }

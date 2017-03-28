@@ -96,4 +96,12 @@ public class DataBlockHeader {
 		System.out.println("\tTIPO DO BLOCK: " + this.blockType);
 		System.out.println("\tESPAÇO USADO: " + Utils.toInt(this.usedSpace, 0));
 	}
+	
+	public int getType() {
+		return blockType;
+	}
+	
+	public int getBlockId() {
+		return Utils.toInt(blockId, 0);
+	}
 }

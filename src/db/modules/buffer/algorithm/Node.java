@@ -1,4 +1,4 @@
-package db.modules.buffer;
+package db.modules.buffer.algorithm;
 
 public class Node<T>{
     private String key;

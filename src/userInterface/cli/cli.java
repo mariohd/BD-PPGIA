@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import db.modules.buffer.BufferController;
+import db.modules.buffer.algorithm.BufferAlgorithm;
 import db.modules.dataStructure.Table;
 import db.modules.dataStructure.Tuple;
 import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
+import db.modules.metaStructure.PageBlock;
 
 public class cli {
 	
@@ -24,7 +27,8 @@ public class cli {
 		tyo();
 		syso("1 - Operação com tabelas");
 		syso("2 - Operação com linhas");
-		syso("3 - Sair");
+		syso("3 - Ver Buffer");
+		syso("4 - Sair");
 		
 		int opt = getScanner().nextInt();
 		
@@ -35,12 +39,26 @@ public class cli {
 		case 2:
 			chooseTable();
 			break;
-		case 3: 
+		case 3:
+			viewBuffer();
+			break;
+		case 4: 
 			break;
 		default:
 			syse("Opção inválida");
 			mainMenu();
 		} 
+	}
+
+	private static void viewBuffer() {
+		BufferAlgorithm<PageBlock> buffer = BufferController.getLRUAlgorithm();
+		
+		syso(buffer.getCollection());
+		
+		syse("Misses => " + buffer.getMisses());
+		syso("Hits => " + buffer.getHits());
+		syso("Hit Ratio => " + buffer.getHitRatio());
+		mainMenu();
 	}
 
 	private static void chooseTable() {
@@ -208,6 +226,10 @@ public class cli {
 			listTables();
 		}
 		
+		if (opt == index) {
+			mainMenu();
+		}
+		
 		if (opt > fs.getTables().size()) {
 			return null;
 		} else {
@@ -216,7 +238,7 @@ public class cli {
 			try {
 				tb.load();
 				syso(tb.print());
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
@@ -239,5 +261,6 @@ public class cli {
 	
 	private static void syse(Object o) {
 		System.err.println(o);
+		System.err.flush();
 	}
 }

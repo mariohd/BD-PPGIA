@@ -7,8 +7,9 @@ import java.util.List;
 
 import db.modules.fs.FileSystem;
 import db.modules.metaStructure.DataBlockHeader;
+import db.modules.metaStructure.PageBlock;
 
-public class DataBlock {
+public class DataBlock implements PageBlock {
 	private Table parent;
 	private DataBlockHeader header;
 	private List<Tuple> tuples;
@@ -17,6 +18,10 @@ public class DataBlock {
 		this.parent = parent;
 		this.header = new DataBlockHeader(parent, blockId);
 		this.tuples = new ArrayList<Tuple>();
+	}
+	
+	public void setParent(Table t) {
+		this.parent = t;
 	}
 	
 	public boolean availableSpaceFor(int tupleSize) {
@@ -59,7 +64,7 @@ public class DataBlock {
 	
 	private int readTuple(int cursor) throws IOException {
 		Tuple tp = new Tuple();
-		cursor = tp.load(parent, cursor);;
+		cursor = tp.load(parent, cursor);
 		tuples.add(tp);
 		return cursor;
 	}
@@ -80,5 +85,29 @@ public class DataBlock {
 
 	public String generateNewRowid() {
 		return this.header.generateNewRowid();
+	}
+
+	public Tuple getTuple(Integer address) {
+		Tuple tp = new Tuple();
+		tp.load(parent, address);
+		return tp;
+	}
+
+	@Override
+	public Object get() {
+		return this;
+	}
+
+	@Override
+	public int type() {
+		return this.header.getType();
+	}
+	
+	public String toString() {
+		return "{ " + this.parent.getContainer() + "." + this.header.getBlockId() +  " }";
+	}
+
+	public Table getParent() {
+		return parent;
 	}
 }

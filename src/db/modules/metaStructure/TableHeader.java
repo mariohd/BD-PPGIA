@@ -11,7 +11,7 @@ import db.modules.dataStructure.Table;
 import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
 
-public class TableHeader {
+public class TableHeader implements PageBlock {
 	
 	private final Table parent;
 	private byte container = 0;
@@ -19,12 +19,14 @@ public class TableHeader {
 	private byte[] blockSize = new byte[3];
  	private byte[] headerDescriptorSize = new byte[2];
 	private byte[] nextWritingBlock = new byte[4];
+	private List<ColumnDescriptor> parentColumns;
 	
 	public TableHeader(Table parent) {
 		this.parent = parent;
 		this.blockSize = Utils.toByteArray(FileSystem.pageSize, 3);
 		this.container = this.parent.getContainer();
 		this.nextWritingBlock = Utils.toByteArray(1, 4);
+		this.parentColumns = parent.getColumns();
 	}
 
 	public boolean save() throws IOException {
@@ -74,6 +76,14 @@ public class TableHeader {
 		file.seek(9);
 		file.read(this.headerDescriptorSize);
 		
+		loadColumns();
+		
+		return true;
+	}
+	
+	public void loadColumns() throws IOException {
+		RandomAccessFile file = parent.getContainerFile();
+		
 		file.seek(11);
 		byte[] byteColumns = new byte[Utils.toInt(headerDescriptorSize, 0)];
 		file.read(byteColumns);
@@ -92,10 +102,11 @@ public class TableHeader {
 					)
 			);
 		}
+		this.parentColumns = columns;
 		this.parent.setColumns(columns);
-		
-		return true;
 	}
+	
+	
 	
 	public String print() {
 		String s = 
@@ -122,5 +133,27 @@ public class TableHeader {
 
 	public int lastBlock() {
 		return Utils.toInt(nextWritingBlock, 0);
+	}
+	
+	public byte getContainer() {
+		return container;
+	}
+	
+	@Override
+	public Object get() {
+		return this;
+	}
+	
+	@Override
+	public int type() {
+		return this.containerStatus;
+	}
+	
+	public String toString() {
+		return "{ " + this.container + ".0 }";
+	}
+
+	public List<ColumnDescriptor> getColumns() {
+		return parentColumns;
 	}
 }

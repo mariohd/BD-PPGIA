@@ -8,10 +8,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import db.modules.buffer.BufferController;
+import db.modules.buffer.algorithm.BufferAlgorithm;
 import db.modules.descriptors.ColumnDescriptor;
+import db.modules.fs.FileSystem;
+import db.modules.metaStructure.PageBlock;
 import db.modules.metaStructure.TableHeader;
 
 public class Table {
@@ -22,9 +27,11 @@ public class Table {
 	private RandomAccessFile file;
 	private TableHeader header;
 	private final String filePath;
+	private BufferAlgorithm<PageBlock> buffer = BufferController.getLRUAlgorithm();
 	
-	public Table(String nome) throws FileNotFoundException {
+	public Table(byte container, String nome) throws FileNotFoundException {
 		this.nome = nome;
+		this.container = container;
 		this.header = new TableHeader(this);
 		this.filePath = "database/data/" + this.nome + ".tb";
 		this.file = new RandomAccessFile(filePath, "rw");
@@ -55,7 +62,19 @@ public class Table {
 	}
 	
 	public boolean load() throws IOException {
-		return header.load();
+		String blockIdent = this.container + ".0";
+		
+		if (buffer.getNode(blockIdent) == null) {
+			this.header.load();
+			buffer.set(blockIdent, this.header);
+			buffer.addMiss();
+		} else {
+			this.header = (TableHeader) buffer.getNode(blockIdent).getValue().get();
+			this.columns = this.header.getColumns();
+			buffer.addHit();
+		}
+		
+		return true;
 	}
 	
 	public boolean insert(Map<ColumnDescriptor, Object> values) throws IOException {
@@ -81,16 +100,17 @@ public class Table {
 	}
 	
 	public List<Tuple> allTuples() throws IOException {
+		this.load();
+		FileSystem fs = new FileSystem();
 		int qtBlock = this.header.lastBlock();
 		List<Tuple> tuples = new ArrayList<Tuple>();
-		if (dataBlocks.size() != qtBlock) {
-			dataBlocks.clear();
-			for (int i = 1; i <= qtBlock; i ++) {
-				dataBlocks.add(new DataBlock(this, i));
-			}
+		dataBlocks = new LinkedList<>();
+		for (int i = 1; i <= qtBlock; i ++) {
+			dataBlocks.add(fs.getDataBlock(this.container + "." + i));
 		}
-
+		
 		for (DataBlock db: dataBlocks) {
+			db.setParent(this);
 			db.load();
 			db.loadTuples();
 			tuples.addAll(db.getTuples());
