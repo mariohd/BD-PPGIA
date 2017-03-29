@@ -28,7 +28,7 @@ public class SelectedTable extends JPanel {
 					updateTuples();
 				}
 			});
-			this.query = new JPanel();
+			this.query = new SearchPanel(table);
 			this.init();
 			this.mount();
 		} catch (IOException e) {

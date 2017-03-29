@@ -3,6 +3,7 @@ package db.modules.dataStructure;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +19,7 @@ import db.modules.descriptors.ColumnDescriptor;
 import db.modules.fs.FileSystem;
 import db.modules.metaStructure.PageBlock;
 import db.modules.metaStructure.TableHeader;
+import userInterface.gui.PropertyMatcher;
 
 public class Table {
 	private final String nome;
@@ -145,5 +147,24 @@ public class Table {
 	public String toString() {
 		return this.nome;
 		
+	}
+
+	public List<Tuple> search(ColumnDescriptor columnSelected, PropertyMatcher matcher, String value) throws IOException {
+		List<Tuple> allTuples = this.allTuples();
+		List<Tuple> matches = new ArrayList<>();
+		
+		for (Tuple tuple : allTuples) {
+			Object backValue = tuple.getMapValues().get(columnSelected);
+			if (columnSelected.getType() == Integer.class) {
+				if (matcher.test(new BigDecimal(value), new BigDecimal((Integer) backValue))) {
+					matches.add(tuple);
+				}
+			} else {
+				if (matcher.test(value, (String) backValue)) {
+					matches.add(tuple);
+				}				
+			}
+		}
+		return matches;
 	}
 }

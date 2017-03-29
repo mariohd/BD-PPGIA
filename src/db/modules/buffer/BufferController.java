@@ -10,7 +10,7 @@ public class BufferController {
 	
 	public static BufferAlgorithm<PageBlock> getLRUAlgorithm() {
 		if (sharedBuffer == null)
-			sharedBuffer = new LRU<PageBlock>(2000);
+			sharedBuffer = new LRU<PageBlock>(3000);
 		return sharedBuffer;
 	}
 	

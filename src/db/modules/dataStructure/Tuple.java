@@ -100,6 +100,10 @@ public class Tuple {
 	public Set<ColumnDescriptor> getColumns() {
 		return this.columns.keySet();
 	}
+	
+	public Map<ColumnDescriptor, Object> getMapValues() {
+		return this.columns;
+	}
 
 	public String print() {
 		String tuple = "";
