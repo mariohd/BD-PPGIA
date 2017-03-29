@@ -14,6 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import db.modules.dataStructure.Table;
 import db.modules.fs.FileSystem;
@@ -36,6 +37,8 @@ public class Window extends JFrame {
 	private JMenu bufferAlgorithms;
 	private JMenuItem lruAlgorithm;
 	
+	private JScrollPane loadingPanel;
+	
 	public Window(FileSystem fs) {
 		this.fs = fs;
 		this.comboTables = new JComboBox<Table>();
@@ -51,6 +54,8 @@ public class Window extends JFrame {
 		this.viewBuffer = new JMenuItem("Ver Buffer");
 		this.bufferAlgorithms = new JMenu("Algoritmos");
 		this.lruAlgorithm = new JMenuItem("LRU");
+		
+		this.loadingPanel = new JScrollPane();
 		
 		init();
 		config();
@@ -120,10 +125,22 @@ public class Window extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (center.isShowing()) remove(center);
-				center = new SelectedTable((Table) comboTables.getSelectedItem());
-				add(center, BorderLayout.CENTER);
+				add(loadingPanel, BorderLayout.CENTER);
 				validate();
 				repaint();
+				
+				Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						center = new SelectedTable((Table) comboTables.getSelectedItem());
+						if (loadingPanel.isShowing()) remove(loadingPanel);
+						add(center, BorderLayout.CENTER);
+						validate();
+						repaint();
+					}
+				});
+				t.start();
 			}
 		});
 	}
@@ -144,6 +161,8 @@ public class Window extends JFrame {
 		northPanel.add(new JLabel("Tabela: "));
 		northPanel.add(comboTables);
 		northPanel.add(confirmTable);
+		
+		this.loadingPanel = new JScrollPane(new JLabel(Icons.getIcon("icons/loading.gif"), JLabel.CENTER));
 		
 		this.setJMenuBar(menuBar);
 		this.add(northPanel, BorderLayout.NORTH);
