@@ -89,15 +89,21 @@ public class Table {
 		return true;
 	}
 	
-	public List<Tuple> allTuples() throws IOException {
+	public List<DataBlock> loadDataBlocks() throws IOException {
 		this.load();
 		FileSystem fs = new FileSystem();
 		int qtBlock = this.header.lastBlock();
-		List<Tuple> tuples = new ArrayList<Tuple>();
 		dataBlocks = new LinkedList<>();
+		
 		for (int i = 1; i <= qtBlock; i ++) {
 			dataBlocks.add(fs.getDataBlock(this.container + "." + i));
 		}
+		return dataBlocks;
+	}
+	
+	public List<Tuple> allTuples() throws IOException {
+		loadDataBlocks();
+		List<Tuple> tuples = new ArrayList<Tuple>();
 		
 		for (DataBlock db: dataBlocks) {
 			db.setParent(this);
@@ -145,8 +151,7 @@ public class Table {
 	}
 	
 	public String toString() {
-		return this.nome;
-		
+		return this.nome;	
 	}
 
 	public List<Tuple> search(ColumnDescriptor columnSelected, PropertyMatcher matcher, String value) throws IOException {
@@ -166,5 +171,16 @@ public class Table {
 			}
 		}
 		return matches;
+	}
+
+	public DataBlock getDataBlock(int i) throws IOException {
+		DataBlock db = getDataBlocks().get(i);
+		db.setParent(this);
+		db.load();
+		return db;
+	}
+	
+	public List<DataBlock> getDataBlocks() {
+		return this.dataBlocks;
 	}
 }

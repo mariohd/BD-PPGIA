@@ -18,7 +18,7 @@ public class TupleTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return elements.size();
+		return  elements.size();
 	}
 
 	@Override

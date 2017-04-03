@@ -104,7 +104,7 @@ public class DataBlock implements PageBlock {
 	}
 	
 	public String toString() {
-		return "{ " + this.parent.getContainer() + "." + this.header.getBlockId() +  " }";
+		return  this.parent.getContainer() + "." + this.header.getBlockId();
 	}
 
 	public Table getParent() {
