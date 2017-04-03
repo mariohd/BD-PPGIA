@@ -97,6 +97,13 @@ public class Window extends JFrame {
 	}
 	
 	private void configActions() {
+		viewBuffer.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new BufferFrame();
+			}
+		});
 		addTable.addActionListener(new ActionListener() {
 			
 			@Override

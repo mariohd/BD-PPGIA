@@ -174,7 +174,8 @@ public class Table {
 	}
 
 	public DataBlock getDataBlock(int i) throws IOException {
-		DataBlock db = getDataBlocks().get(i);
+		FileSystem fs = new FileSystem();
+		DataBlock db = fs.getDataBlock(this.container + "." + i);
 		db.setParent(this);
 		db.load();
 		return db;

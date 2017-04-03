@@ -1,7 +1,6 @@
 package userInterface.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,13 +62,8 @@ public class TableContentPanel extends JPanel {
 	}
 	
 	private void init() {
-		try {
-			this.setLayout(new BorderLayout());
-			this.table.loadDataBlocks();
-			this.updatePageLabel();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.setLayout(new BorderLayout());
+		this.updatePageLabel();
 	}
 	
 	private void mount() {
@@ -135,10 +129,8 @@ public class TableContentPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.getDataBlocks().size() >= dataBlockId + 1) {
-					dataBlockId ++;
-					updatePageLabel();
-				}
+				dataBlockId ++;
+				updatePageLabel();
 			}
 		});
 		previous.addActionListener(new ActionListener() {
@@ -167,7 +159,7 @@ public class TableContentPanel extends JPanel {
 					@Override
 					public void run() {
 						try {
-							DataBlock db = table.getDataBlock(dataBlockId - 1);
+							DataBlock db = table.getDataBlock(dataBlockId);
 							db.loadTuples();
 							tuples.clear();
 							tuples = db.getTuples();
@@ -194,13 +186,16 @@ public class TableContentPanel extends JPanel {
 						
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Object page = JOptionPane.showInputDialog(null, "Qual página você deseja ver?", "Seletor de páginas", JOptionPane.INFORMATION_MESSAGE, Icons.getIcon("icons/search.png", new Dimension(64, 64)), table.getDataBlocks().toArray(), new Integer(dataBlockId));
-				if (page == null || page == "")
+				String pageString = JOptionPane.showInputDialog(null, "Qual página você deseja ver?", "Seletor de páginas", JOptionPane.INFORMATION_MESSAGE);
+				if (pageString == null || "".equals(pageString))
 					return;
-				dataBlockId = table.getDataBlocks().indexOf(page) + 1;
-				updatePageLabel();
-				revalidate();
-				repaint();
+				else {
+					int page = Integer.valueOf(pageString);
+					dataBlockId = page;
+					updatePageLabel();
+					revalidate();
+					repaint();					
+				}
 			}
 		});
 		
@@ -231,6 +226,6 @@ public class TableContentPanel extends JPanel {
 	}
 	
 	private void updatePageLabel() {
-		this.dataBlockLabel.setText("" + this.dataBlockId + "/" + this.table.getDataBlocks().size());
+		this.dataBlockLabel.setText("" + this.dataBlockId);
 	}
 }
